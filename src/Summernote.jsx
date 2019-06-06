@@ -21,8 +21,7 @@ class ReactSummernote extends Component {
     this.onImageUpload = this.onImageUpload.bind(this);
 
     this.focus = this.focus.bind(this);
-     this.destroy = this.destroy.bind(this);
-
+    this.destroy = this.destroy.bind(this);
     this.isEmpty = this.isEmpty.bind(this);
     this.reset = this.reset.bind(this);
     this.replace = this.replace.bind(this);
@@ -89,7 +88,7 @@ class ReactSummernote extends Component {
 
     if (typeof onInit === 'function') {
       onInit({
-        summernote: this.editor.summernote,
+        summernote: this.editor,
         focus: this.focus,
         destroy:this.destroy,
         isEmpty: this.isEmpty,
