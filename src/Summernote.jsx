@@ -21,6 +21,8 @@ class ReactSummernote extends Component {
     this.onImageUpload = this.onImageUpload.bind(this);
 
     this.focus = this.focus.bind(this);
+     this.destroy = this.destroy.bind(this);
+
     this.isEmpty = this.isEmpty.bind(this);
     this.reset = this.reset.bind(this);
     this.replace = this.replace.bind(this);
@@ -32,6 +34,7 @@ class ReactSummernote extends Component {
     this.insertText = this.insertText.bind(this);
 
     ReactSummernote.focus = this.focus.bind(this);
+    ReactSummernote.destroy = this.destroy.bind(this);    
     ReactSummernote.isEmpty = this.isEmpty.bind(this);
     ReactSummernote.reset = this.reset.bind(this);
     ReactSummernote.replace = this.replace.bind(this);
@@ -45,23 +48,14 @@ class ReactSummernote extends Component {
 
   componentDidMount() {
     const options = this.props.options || {};
-    const codeview = this.props.codeview;
-    // const codeviewCommand = codeview ? 'codeview.activate' : 'codeview.deactivate';
     options.callbacks = this.callbacks;
 
     this.editor = $(`#${this.uid}`);
     this.editor.summernote(options);
-    if (codeview) {
-      this.editor.summernote('codeview.activate');
-    }
   }
 
   componentWillReceiveProps(nextProps) {
     const { props } = this;
-
-    const codeview = nextProps.codeview;
-    const codeviewCommand = codeview ? 'codeview.activate' : 'codeview.deactivate';
-
 
     if (typeof nextProps.value === 'string' && props.value !== nextProps.value) {
       this.replace(nextProps.value);
@@ -69,9 +63,6 @@ class ReactSummernote extends Component {
 
     if (typeof nextProps.disabled === 'boolean' && props.disabled !== nextProps.disabled) {
       this.toggleState(nextProps.disabled);
-    }
-    if (codeview !== props.codeview) {
-      this.editor.summernote(codeviewCommand);
     }
   }
 
@@ -98,8 +89,9 @@ class ReactSummernote extends Component {
 
     if (typeof onInit === 'function') {
       onInit({
-        summernote: this.editor.summernote.bind(this.editor),
+        summernote: this.editor.summernote,
         focus: this.focus,
+        destroy:this.destroy,
         isEmpty: this.isEmpty,
         reset: this.reset,
         replace: this.replace,
@@ -122,6 +114,10 @@ class ReactSummernote extends Component {
 
   focus() {
     this.editor.summernote('focus');
+  }
+
+    destroy() {
+    this.editor.summernote('destroy');
   }
 
   isEmpty() {
@@ -193,20 +189,20 @@ class ReactSummernote extends Component {
   }
 
   render() {
-    const { tag: Tag, children, className } = this.props;
+    const { value, defaultValue, className } = this.props;
+    const html = value || defaultValue;
 
     return (
       <div className={className}>
-        <Tag id={this.uid}>{children}</Tag>
+        <div id={this.uid} dangerouslySetInnerHTML={{ __html: html }} />
       </div>
     );
   }
 }
 
 ReactSummernote.propTypes = {
-  tag: PropTypes.string, // will determing using div or textarea field for form components like redux-form
-  children: PropTypes.node, // instead of value, using children makes more sense for div and textarea blocks
-  codeview: PropTypes.bool,
+  value: PropTypes.string,
+  defaultValue: PropTypes.string,
   className: PropTypes.string,
   options: PropTypes.object,
   disabled: PropTypes.bool,
@@ -221,7 +217,4 @@ ReactSummernote.propTypes = {
   onImageUpload: PropTypes.func
 };
 
-ReactSummernote.defaultProps = {
-  tag: 'div'
-};
 export default ReactSummernote;
